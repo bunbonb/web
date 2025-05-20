@@ -125,107 +125,36 @@ body {
 
 /* BG */
 #bg {
-  -moz-transition: opacity 2s ease-in-out;
-  -webkit-transition: opacity 2s ease-in-out;
-  -ms-transition: opacity 2s ease-in-out;
-  transition: opacity 2s ease-in-out;
-  height: 100%;
-  left: 0;
-  opacity: 0.375;
   position: fixed;
+  left: 0;
   top: 0;
-  width: 100%;
-  z-index: 1; }
-  #bg div {
-    -moz-transition: opacity 3s ease;
-    -webkit-transition: opacity 3s ease;
-    -ms-transition: opacity 3s ease;
-    transition: opacity 3s ease;
-    background-size: cover;
-    height: 100%;
-    left: 0;
-    opacity: 0;
-    position: absolute;
-    top: 0;
-    visibility: hidden;
-    width: 150%; }
-    #bg div.visible {
-      -moz-animation: bg 45s linear infinite;
-      -webkit-animation: bg 45s linear infinite;
-      -ms-animation: bg 45s linear infinite;
-      animation: bg 45s linear infinite;
-      opacity: 1;
-      visibility: visible;
-      z-index: 1; }
-      #bg div.visible.top {
-        z-index: 2; }
-      @media screen and (max-width: 1280px) {
-        #bg div.visible {
-          -moz-animation: bg 29.25s linear infinite;
-          -webkit-animation: bg 29.25s linear infinite;
-          -ms-animation: bg 29.25s linear infinite;
-          animation: bg 29.25s linear infinite; } }
-      @media screen and (max-width: 736px) {
-        #bg div.visible {
-          -moz-animation: bg 18s linear infinite;
-          -webkit-animation: bg 18s linear infinite;
-          -ms-animation: bg 18s linear infinite;
-          animation: bg 18s linear infinite; } }
-    #bg div:only-child {
-      -moz-animation-direction: alternate !important;
-      -webkit-animation-direction: alternate !important;
-      -ms-animation-direction: alternate !important;
-      animation-direction: alternate !important; }
-  body.is-preload #bg {
-    opacity: 0; }
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  overflow: hidden;
+}
+#bg > div {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 3s;
+}
+#bg > div.visible {
+  opacity: 1;
+  z-index: 1;
+}
+#bg > div.top {
+  z-index: 2;
+}
 
-@-moz-keyframes bg {
-  0% {
-    -moz-transform: translateX(0);
-    -webkit-transform: translateX(0);
-    -ms-transform: translateX(0);
-    transform: translateX(0); }
-  100% {
-    -moz-transform: translateX(-25%);
-    -webkit-transform: translateX(-25%);
-    -ms-transform: translateX(-25%);
-    transform: translateX(-25%); } }
-
-@-webkit-keyframes bg {
-  0% {
-    -moz-transform: translateX(0);
-    -webkit-transform: translateX(0);
-    -ms-transform: translateX(0);
-    transform: translateX(0); }
-  100% {
-    -moz-transform: translateX(-25%);
-    -webkit-transform: translateX(-25%);
-    -ms-transform: translateX(-25%);
-    transform: translateX(-25%); } }
-
-@-ms-keyframes bg {
-  0% {
-    -moz-transform: translateX(0);
-    -webkit-transform: translateX(0);
-    -ms-transform: translateX(0);
-    transform: translateX(0); }
-  100% {
-    -moz-transform: translateX(-25%);
-    -webkit-transform: translateX(-25%);
-    -ms-transform: translateX(-25%);
-    transform: translateX(-25%); } }
-
-@keyframes bg {
-  0% {
-    -moz-transform: translateX(0);
-    -webkit-transform: translateX(0);
-    -ms-transform: translateX(0);
-    transform: translateX(0); }
-  100% {
-    -moz-transform: translateX(-25%);
-    -webkit-transform: translateX(-25%);
-    -ms-transform: translateX(-25%);
-    transform: translateX(-25%); } }
+body.is-preload #bg {
+  opacity: 0; }
 
 /* Type */
 body, input, select, textarea {
@@ -885,3 +814,90 @@ button,
       left: auto;
       margin: 1em 0 0 0;
       position: relative; } }
+
+/* Carousel */
+.carousel-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start; /* align to left edge */
+  background: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  z-index: 1;
+}
+.carousel-frame.active {
+  display: flex;
+  opacity: 1;
+  position: relative;
+  z-index: 2;
+}
+
+/* Constrain content width and add left margin for spacing from edge/arrows */
+.carousel-frame > header,
+.carousel-frame > form,
+.carousel-frame > ul {
+  max-width: 520px;
+  width: 90vw;
+  margin-left: 3.5em;
+  box-sizing: border-box;
+}
+
+/* Remove circle background from arrows, style as plain arrows */
+.carousel-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #4a90e2;
+  font-size: 2.5em;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0.85;
+  padding: 0 0.2em;
+  transition: color 0.2s;
+}
+#carousel-prev { left: 0.5em; }
+#carousel-next { right: 2vw; }
+.carousel-nav:hover { color: #222; }
+
+/* Fade animation */
+.fade-in {
+  animation: fadeIn 0.4s;
+}
+.fade-out {
+  animation: fadeOut 0.4s;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* Animations */
+@keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideOutLeft { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
+@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+
+.slide-in-left { animation: slideInLeft 0.5s forwards; }
+.slide-out-left { animation: slideOutLeft 0.5s forwards; }
+.slide-in-right { animation: slideInRight 0.5s forwards; }
+.slide-out-right { animation: slideOutRight 0.5s forwards; }
+
+/* Signup Message */
+.signup-message {
+  margin-top: 1.5em;
+  font-size: 1.2em;
+  color: #4a90e2;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  max-width: 520px;
+  width: 90vw;
+  margin-left: 3.5em;
+  box-sizing: border-box;
+  text-align: left;
+}

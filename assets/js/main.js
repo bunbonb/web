@@ -28,160 +28,159 @@
 			}, 100);
 		});
 
-	// Slideshow Background.
+	// Background Slideshow
 		(function() {
+			var settings = {
+				images: {
+					'images/bg01.jpg': 'center',
+					'images/bg02.jpg': 'center',
+					'images/bg03.jpg': 'center'
+				},
+				delay: 6000
+			};
+			var pos = 0, lastPos = 0,
+				$wrapper, $bgs = [], $bg,
+				k;
 
-			// Settings.
-				var settings = {
+			$wrapper = document.getElementById('bg');
+			if (!$wrapper) return;
 
-					// Images (in the format of 'url': 'alignment').
-						images: {
-							'images/bg01.jpg': 'center',
-							'images/bg02.jpg': 'center',
-							'images/bg03.jpg': 'center'
-						},
+			for (k in settings.images) {
+				$bg = document.createElement('div');
+				$bg.style.backgroundImage = 'url("' + k + '")';
+				$bg.style.backgroundPosition = settings.images[k];
+				$wrapper.appendChild($bg);
+				$bgs.push($bg);
+			}
 
-					// Delay.
-						delay: 6000
+			$bgs[pos].classList.add('visible');
+			$bgs[pos].classList.add('top');
 
-				};
+			if ($bgs.length == 1) return;
 
-			// Vars.
-				var	pos = 0, lastPos = 0,
-					$wrapper, $bgs = [], $bg,
-					k, v;
-
-			// Create BG wrapper, BGs.
-				$wrapper = document.createElement('div');
-					$wrapper.id = 'bg';
-					$body.appendChild($wrapper);
-
-				for (k in settings.images) {
-
-					// Create BG.
-						$bg = document.createElement('div');
-							$bg.style.backgroundImage = 'url("' + k + '")';
-							$bg.style.backgroundPosition = settings.images[k];
-							$wrapper.appendChild($bg);
-
-					// Add it to array.
-						$bgs.push($bg);
-
-				}
-
-			// Main loop.
+			window.setInterval(function() {
+				lastPos = pos;
+				pos++;
+				if (pos >= $bgs.length) pos = 0;
+				$bgs[lastPos].classList.remove('top');
 				$bgs[pos].classList.add('visible');
 				$bgs[pos].classList.add('top');
-
-				// Bail if we only have a single BG or the client doesn't support transitions.
-					if ($bgs.length == 1
-					||	!canUse('transition'))
-						return;
-
-				window.setInterval(function() {
-
-					lastPos = pos;
-					pos++;
-
-					// Wrap to beginning if necessary.
-						if (pos >= $bgs.length)
-							pos = 0;
-
-					// Swap top images.
-						$bgs[lastPos].classList.remove('top');
-						$bgs[pos].classList.add('visible');
-						$bgs[pos].classList.add('top');
-
-					// Hide last image after a short delay.
-						window.setTimeout(function() {
-							$bgs[lastPos].classList.remove('visible');
-						}, settings.delay / 2);
-
-				}, settings.delay);
-
+				window.setTimeout(function() {
+					$bgs[lastPos].classList.remove('visible');
+				}, settings.delay / 2);
+			}, settings.delay);
 		})();
 
-	// Signup Form.
+	// Carousel logic (full-page frames with mouse swipe)
 		(function() {
+			const frames = document.querySelectorAll('.carousel-frame');
+			const prevBtn = document.getElementById('carousel-prev');
+			const nextBtn = document.getElementById('carousel-next');
+			let current = 0;
+			let animating = false;
 
-			// Vars.
-				var $form = document.querySelectorAll('#signup-form')[0],
-					$submit = document.querySelectorAll('#signup-form input[type="submit"]')[0],
-					$message;
+			function showFrame(idx) {
+				if (animating || idx === current) return;
+				animating = true;
+				frames[current].classList.remove('active');
+				frames[current].classList.add('fade-out');
+				frames[idx].classList.add('fade-in');
+				frames[idx].classList.add('active');
+				setTimeout(() => {
+					frames[current].classList.remove('fade-out');
+					frames[idx].classList.remove('fade-in');
+					current = idx;
+					animating = false;
+				}, 400);
+			}
 
-			// Bail if addEventListener isn't supported.
-				if (!('addEventListener' in $form))
-					return;
+			prevBtn.addEventListener('click', function() {
+				const idx = (current - 1 + frames.length) % frames.length;
+				showFrame(idx);
+			});
+			nextBtn.addEventListener('click', function() {
+				const idx = (current + 1) % frames.length;
+				showFrame(idx);
+			});
 
-			// Message.
-				$message = document.createElement('span');
-					$message.classList.add('message');
-					$form.appendChild($message);
+			// Mouse swipe support
+			let startX = null;
+			let dragging = false;
 
-				$message._show = function(type, text) {
+			function onMouseDown(e) {
+				if (animating) return;
+				dragging = true;
+				startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+			}
+			function onMouseMove(e) {
+				if (!dragging) return;
+				// Prevent scrolling while dragging
+				e.preventDefault();
+			}
+			function onMouseUp(e) {
+				if (!dragging) return;
+				let endX = e.type === 'touchend'
+					? (e.changedTouches && e.changedTouches[0].clientX)
+					: e.clientX;
+				let deltaX = endX - startX;
+				dragging = false;
+				if (Math.abs(deltaX) > 60) { // threshold
+					if (deltaX < 0) {
+						// swipe left, next
+						const idx = (current + 1) % frames.length;
+						showFrame(idx);
+					} else {
+						// swipe right, prev
+						const idx = (current - 1 + frames.length) % frames.length;
+						showFrame(idx);
+					}
+				}
+			}
 
-					$message.innerHTML = text;
-					$message.classList.add(type);
-					$message.classList.add('visible');
-
-					window.setTimeout(function() {
-						$message._hide();
-					}, 3000);
-
-				};
-
-				$message._hide = function() {
-					$message.classList.remove('visible');
-				};
-
-			// Events.
-			// Note: If you're *not* using AJAX, get rid of this event listener.
-				$form.addEventListener('submit', function(event) {
-
-					event.stopPropagation();
-					event.preventDefault();
-
-					// Hide message.
-						$message._hide();
-
-					// Disable submit.
-						$submit.disabled = true;
-
-					// Process form.
-					// Note: Doesn't actually do anything yet (other than report back with a "thank you"),
-					// but there's enough here to piece together a working AJAX submission call that does.
-						window.setTimeout(function() {
-
-							// Reset form.
-								$form.reset();
-
-							// Enable submit.
-								$submit.disabled = false;
-
-							// Show message.
-								$message._show('success', 'Thank you!');
-								//$message._show('failure', 'Something went wrong. Please try again.');
-
-						}, 750);
-
-				});
+			const carouselArea = document.body;
+			carouselArea.addEventListener('mousedown', onMouseDown);
+			carouselArea.addEventListener('mousemove', onMouseMove);
+			carouselArea.addEventListener('mouseup', onMouseUp);
+			carouselArea.addEventListener('mouseleave', () => { dragging = false; });
+			// Touch support for mobile
+			carouselArea.addEventListener('touchstart', onMouseDown, {passive: false});
+			carouselArea.addEventListener('touchmove', onMouseMove, {passive: false});
+			carouselArea.addEventListener('touchend', onMouseUp);
 
 		})();
 
-	// Signup Form with AJAX.
-		document.getElementById('signup-form').addEventListener('submit', async function(e) {
-			e.preventDefault();
-			const email = document.getElementById('email').value;
-			const response = await fetch('/api/signup', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email })
+	// Signup Form logic (only for the first frame)
+		(function() {
+			var $form = document.querySelectorAll('#signup-form')[0];
+			if (!$form) return;
+			var $submit = $form.querySelector('input[type="submit"]');
+			var $message = document.createElement('span');
+			$message.classList.add('message');
+			$form.appendChild($message);
+
+			$message._show = function(type, text) {
+				$message.innerHTML = text;
+				$message.classList.add(type);
+				$message.classList.add('visible');
+				window.setTimeout(function() {
+					$message._hide();
+				}, 3000);
+			};
+			$message._hide = function() {
+				$message.classList.remove('visible');
+			};
+
+			$form.addEventListener('submit', function(event) {
+				event.stopPropagation();
+				event.preventDefault();
+				$message._hide();
+				$submit.disabled = true;
+				window.setTimeout(function() {
+					$form.reset();
+					$submit.disabled = false;
+					$message._show('success', 'Thank you!');
+				}, 750);
 			});
-			if (response.ok) {
-				alert('Thank you for signing up!');
-			} else {
-				alert('There was an error. Please try again.');
-			}
-		});
+		})();
 
 })();

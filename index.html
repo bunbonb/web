@@ -13,31 +13,47 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 	</head>
 	<body class="is-preload">
-		<!-- Header -->
+		<div id="bg"></div>
+		<!-- Carousel Frames (each replaces the main content area) -->
+		<div class="carousel-frame active" id="frame-0">
 			<header id="header">
 				<h1>Symposius.app</h1>
-				<p>Innovating software applications to change the way people connect & discover.
-				</p>
+				<p>Innovating software applications to change the way people connect & discover.</p>
 			</header>
-
-		<!-- Signup Form -->
-			<form id="signup-form" method="post" action="#">
-				<input type="email" name="email" id="email" placeholder="Email Address" />
-				<input type="submit" value="Sign Up" />
-			</form>
-
+			<div class="signup-message">TestFlight available soon</div>
+		</div>
+		<div class="carousel-frame" id="frame-1">
+			<header id="header">
+				<h2>Company Intro</h2>
+				<p>Symposius aims to incorporate AI-powered algorithms into personalized dining recommendations, reducing misleading impressions from restaurant marketing. The platform also aims to foster a dynamic community where users can share their discoveries, creating a trusted network of authentic dining experiences.</p>
+			</header>
+		</div>
+		<div class="carousel-frame" id="frame-2">
+			<header id="header">
+				<h2>Mission</h2>
+				<ul>
+					<li>Accurate and continuously improving AI tools for bespoke and comprehensive restaurant recommendations</li>
+					<li>Authentic, real-time user ratings that reflect a dynamic score for each restaurant</li>
+					<li>A social platform among acquaintances, instead of KOLs, where users engage with their friend groups, sharing dining experiences and personalized preferences</li>
+					<li>Interactive map visualization for a clearer, more intuitive understanding of restaurant recommendations while tracking and viewing users’ personalized dining footprints globally.</li>
+				</ul>
+			</header>
+		</div>
+		<!-- Carousel Navigation -->
+		<button id="carousel-prev" class="carousel-nav">&#8592;</button>
+		<button id="carousel-next" class="carousel-nav">&#8594;</button>
 		<!-- Footer -->
-			<footer id="footer">
-				<ul class="icons">
-					<li><a href="mailto:inquires@symposius.app" class="icon fa-envelope"><span class="label">Email</span></a></li>
-				</ul>
-				<ul class="copyright">
-					<li>&copy; Symposius.app 2025</li>
-				</ul>
-			</footer>
+		<footer id="footer">
+			<ul class="icons">
+				<li><a href="mailto:inquires@symposius.app" class="icon fa-envelope"><span class="label">Email</span></a></li>
+			</ul>
+			<ul class="copyright">
+				<li>&copy; Symposius.app 2025</li>
+			</ul>
+		</footer>
 
 		<!-- Scripts -->
-			<script src="assets/js/main.js"></script>
+		<script src="assets/js/main.js"></script>
 
 	</body>
 </html>
